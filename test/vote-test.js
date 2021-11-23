@@ -68,12 +68,19 @@ describe("vote contract test", () => {
             vote.connect(account1).vote(1, account1.address)
         ).to.be.revertedWith("Not authorized to vote");
 
-        // account1 delegates vote to account3 and account2
-        await vote.connect(account1).delegate(account3.address);
+        // account1 delegates vote to account2
         await vote.connect(account1).delegate(account2.address);
-
+        
         // cancel delegate from account2
         await vote.connect(account1).cancelDelegate(account2.address);
+
+        // error when cancel not delegated acctoun
+        await expect(
+            vote.connect(account1).cancelDelegate(account3.address)
+        ).to.be.revertedWith("He is not delegated user");
+        
+        // account1 delegates vote to account3 and account3
+        await vote.connect(account1).delegate(account3.address);
         
         // account2 can not vote as delegation removed
         await expect(
